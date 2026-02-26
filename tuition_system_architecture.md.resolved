@@ -1,0 +1,340 @@
+# 🎓 EduCore — Tuition Institution Management System
+### Full System Architecture & Feature Blueprint
+
+---
+
+## 📌 Overview
+
+**EduCore** is a locally-installable, multi-role management platform designed for tuition institutes of any size. An institute owner downloads and installs the app, registers their institution, and the system auto-generates a full hierarchy of access for every stakeholder — from owner down to student.
+
+---
+
+## 🏗️ System Architecture at a Glance
+
+```mermaid
+graph TD
+    A[Platform / Super Admin] --> B[Institution Owner]
+    B --> C[Workers / Managers]
+    C --> D[Teachers]
+    D --> E[Card Markers]
+    D --> F[Students]
+    E --> F
+```
+
+---
+
+## 👥 Roles & Permissions
+
+| Role | Description | Key Permissions |
+|---|---|---|
+| **Platform Admin** | The software vendor (you) | Manage licenses, view all institutions, push updates |
+| **Institution Owner** | Registers & owns the institute | Full admin access, add/remove workers, view all reports |
+| **Worker / Manager** | Operational staff assigned by Owner | Add teachers, students, card markers; manage classes, fees, schedules |
+| **Teacher** | Subject educator | View own class students, schedule papers/tests, update weekly timetables, view student progress |
+| **Card Marker** | Assigned per teacher | Mark attendance, collect class fees, report to teacher |
+| **Student** | Registered learner | View own profile, classes, payments, marks, tutes/notes, progress analytics |
+
+---
+
+## 🖥️ Application Flow
+
+### 1. Installation & Institution Registration
+- Owner **downloads** the EduCore installer
+- On first launch, a **Setup Wizard** runs:
+  - Institute name, address, contact, logo
+  - Owner personal information
+  - License key activation (or free trial)
+- After registration → Owner receives **Main Admin credentials** via registered email/SMS
+- A local **SQLite database** is initialized for the institution
+
+### 2. Owner Dashboard
+- View institution-wide analytics
+- Add / manage Workers
+- Configure global settings (grade levels, subjects, fee structures, academic calendar)
+- Generate and export reports (PDF/Excel)
+- Manage subscription / license renewal
+
+### 3. Worker / Manager Dashboard
+- Add & manage Teachers, Students, Card Markers
+- Create and manage **Classes** (assign teacher, subject, grade, room, schedule)
+- Set fee structures per class
+- Generate receipts and invoices
+- Manage the academic calendar (holidays, exam periods)
+- Handle student enrollment per class
+- View all financial summaries
+
+### 4. Teacher Dashboard
+- View all assigned classes and enrolled students
+- Check per-student: attendance %, fee payment status, marks, notes collected
+- **Schedule Papers & Term Tests** (set date, subject, syllabus, max marks)
+- **Update Weekly Timetable** (every Monday before 9 AM — system sends reminder)
+- Upload notes/tutes for students to access
+- View card marker reports
+
+### 5. Card Marker Dashboard
+- **Mark Daily Attendance** — per class session (Present / Absent / Late / Excused)
+- **Collect Class Fees** — record payment, generate receipt, flag unpaid students
+- View assigned teacher's class list
+- Submit end-of-session reports to teacher
+
+### 6. Student Portal
+- Login with username & password
+- View **My Classes** — enrolled classes, teacher info, schedule
+- View **Payment History** — all fee receipts, outstanding amounts
+- View **Academic Records** — marks per paper/term test, grade breakdown
+- Download **Notes & Tutes** provided by teacher
+- View **Attendance Record** — per class percentage
+- **Progress Dashboard** — visual charts of marks trend, attendance trend, payment consistency
+
+---
+
+## 📦 Feature Modules
+
+### 🏫 Institution Management
+- Multi-branch support (one owner, many branches)
+- Branch-level reporting
+- Academic year / term configuration
+- Subject and grade level master data
+
+### 👨‍🎓 Student Management
+- Student registration (name, DOB, contact, guardian details, photo)
+- Unique Student ID generation
+- Class enrollment (multi-class allowed)
+- Student status tracking (Active / Inactive / Graduated)
+- Student transfer between classes
+- Student search and filter
+
+### 👩‍🏫 Teacher Management
+- Teacher profile (qualifications, subjects, contact)
+- Class assignment management
+- Weekly timetable module (Mon–Sun slots)
+- Teaching hours summary per week/month
+
+### 📋 Attendance Management
+- Class-wise daily attendance by Card Marker
+- Attendance percentage auto-calculated
+- Low-attendance alerts (e.g., below 75%)
+- Monthly attendance reports per student
+- Bulk attendance marking with override
+
+### 💰 Fee Management
+- Class-wise fee structure
+- Monthly, per-session, or annual fee modes
+- Fee collection by Card Marker
+- Payment receipts (printable PDF)
+- Outstanding fee dashboard
+- Payment reminders (SMS/email integration optional)
+- Discount / scholarship management
+- Financial summary reports
+
+### 📝 Academic Records
+- Paper / Term Test scheduling by Teacher
+- Mark entry per student per exam
+- Grade calculation with configurable grade bands
+- Rank computation within class
+- Cumulative GPA / average tracking
+- Progress report card generation (PDF)
+
+### 📅 Scheduling & Timetable
+- Teacher weekly timetable editor (drag & drop or form-based)
+- Class schedule viewer for students
+- Academic calendar with holidays and exam periods
+- Automated clash detection for rooms/teachers
+
+### 📚 Learning Resources
+- Teacher uploads notes / tutes (PDF, doc, images)
+- Student downloads from their portal
+- Resource tagged by class and subject
+- Storage quota management
+
+### 📊 Analytics & Reports
+- **Student-level**: Attendance trend, marks trend, fee payment history
+- **Class-level**: Average marks, attendance rates, fee collection rate
+- **Institution-level**: Revenue summary, top-performing classes, enrollment growth
+- Export: PDF, Excel, CSV
+- Printable report cards for students
+
+### 🔔 Notifications & Alerts
+- In-app notification centre
+- Teacher reminder: "Update timetable for next week" (every weekend)
+- Student/Guardian: Low attendance warning, outstanding fee alert, upcoming exam reminder
+- Optional: SMS gateway integration (Twilio / local provider)
+- Optional: Email (SMTP)
+
+### 🔐 Security & Access Control
+- Role-based access control (RBAC)
+- All passwords hashed (bcrypt)
+- Session management with auto-logout
+- Audit log: who did what and when
+- Data backup & restore (local + optional cloud)
+- Owner can revoke any access instantly
+
+---
+
+## 🛠️ Recommended Tech Stack
+
+### Option A — Desktop App (Recommended for "installable on PC")
+| Layer | Technology |
+|---|---|
+| **Frontend UI** | Electron.js + React (or Svelte for lighter builds) |
+| **Styling** | Tailwind CSS |
+| **State Management** | Zustand / Redux Toolkit |
+| **Database** | SQLite (via Better-SQLite3) — local, no server needed |
+| **ORM** | Drizzle ORM or Sequelize |
+| **PDF Generation** | Puppeteer / jsPDF |
+| **Charts** | Recharts / Chart.js |
+| **Auth** | JWT stored locally + bcrypt |
+| **Packaging** | Electron Builder (generates `.exe` installer for Windows) |
+| **Notifications** | Electron native notifications + optional Nodemailer |
+
+### Option B — Web App (Hosted / Self-hostable)
+| Layer | Technology |
+|---|---|
+| **Frontend** | Next.js 14 (App Router) |
+| **Backend API** | Node.js + Express or Next.js API routes |
+| **Database** | PostgreSQL (hosted) or SQLite (self-hosted) |
+| **Auth** | NextAuth.js |
+| **File Storage** | Local filesystem or AWS S3 |
+| **Deployment** | Docker container — owner runs it locally or on a small VPS |
+
+> **Recommendation:** Go with **Option A (Electron)** for a true installable experience. You can later add a companion web portal for students/parents.
+
+---
+
+## 🗄️ Database Schema Overview
+
+```
+institutions          → id, name, address, logo, owner_id, license_key, created_at
+users                 → id, institution_id, role, name, email, phone, password_hash, status
+branches              → id, institution_id, name, location
+academic_years        → id, institution_id, label, start_date, end_date
+subjects              → id, institution_id, name, code
+classes               → id, branch_id, subject_id, teacher_id, grade_level, room, fee_amount, fee_mode
+enrollments           → id, class_id, student_id, enrolled_at, status
+timetable_slots       → id, class_id, teacher_id, week_of, day, start_time, end_time
+attendance_sessions   → id, class_id, date, card_marker_id
+attendance_records    → id, session_id, student_id, status (present/absent/late/excused)
+fee_collections       → id, enrollment_id, amount, paid_at, card_marker_id, receipt_no
+exams                 → id, class_id, title, type (paper/term), scheduled_at, max_marks
+exam_results          → id, exam_id, student_id, marks_obtained, grade
+resources             → id, class_id, teacher_id, title, file_path, file_type, uploaded_at
+notifications         → id, user_id, message, type, is_read, created_at
+audit_logs            → id, user_id, action, entity, entity_id, timestamp
+```
+
+---
+
+## 🔄 Key User Flows
+
+### Student Login → Dashboard
+```
+Login → Verify credentials → Load enrolled classes →
+Show: [Classes | Payments | Marks | Notes | Attendance | Progress]
+```
+
+### Card Marker → Mark Attendance
+```
+Login → Select Class → Select Date → Mark each student →
+Submit → Session saved → Teacher notified
+```
+
+### Teacher → Schedule Exam
+```
+Login → My Classes → Select Class → Exams → New Exam →
+Set Title / Type / Date / Max Marks → Publish → Students notified
+```
+
+### Worker → Enroll Student
+```
+Login → Students → Add/Search Student → Select Class(es) →
+Confirm Enrollment → Student gets credentials
+```
+
+---
+
+## 🗺️ Development Roadmap
+
+### Phase 1 — Foundation (Weeks 1–4)
+- [ ] Project setup (Electron + React + SQLite)
+- [ ] Auth system (login, roles, session)
+- [ ] Institution registration wizard
+- [ ] User management (Owner adds Workers, Workers add others)
+- [ ] Basic class and student management
+
+### Phase 2 — Core Operations (Weeks 5–8)
+- [ ] Attendance module (Card Marker flow)
+- [ ] Fee collection module (receipts, outstanding)
+- [ ] Timetable editor (Teacher weekly updates)
+- [ ] Exam scheduling and mark entry
+
+### Phase 3 — Student Portal & Analytics (Weeks 9–12)
+- [ ] Student login portal
+- [ ] Progress dashboards (charts, trends)
+- [ ] Notes/tutes upload and download
+- [ ] Report card PDF generation
+
+### Phase 4 — Polish & Distribution (Weeks 13–16)
+- [ ] Notification system (in-app + email/SMS)
+- [ ] Audit logs & security hardening
+- [ ] Backup & restore
+- [ ] Electron installer packaging (`.exe`)
+- [ ] License key system
+- [ ] Documentation & user manual
+
+---
+
+## 📁 Suggested Project Structure
+
+```
+educore/
+├── electron/                  # Electron main process
+│   ├── main.js
+│   ├── preload.js
+│   └── ipc-handlers/          # IPC for DB operations
+│
+├── src/                       # React frontend
+│   ├── app/
+│   │   ├── auth/              # Login, registration wizard
+│   │   ├── owner/             # Owner dashboard & settings
+│   │   ├── worker/            # Worker management panels
+│   │   ├── teacher/           # Teacher dashboard, timetable, exams
+│   │   ├── card-marker/       # Attendance & fee collection
+│   │   └── student/           # Student portal
+│   │
+│   ├── components/            # Shared UI components
+│   ├── hooks/                 # Custom React hooks
+│   ├── store/                 # Global state (Zustand)
+│   └── utils/                 # Helpers, formatters
+│
+├── db/
+│   ├── schema.js              # Table definitions
+│   ├── migrations/            # DB version migrations
+│   └── seeds/                 # Demo data for testing
+│
+├── assets/                    # Icons, fonts, images
+├── resources/                 # User-uploaded files (notes/tutes)
+├── package.json
+└── electron-builder.config.js # Installer config
+```
+
+---
+
+## ✅ Additional Features Worth Adding
+
+| Feature | Value |
+|---|---|
+| **Dark / Light mode** | Better UX for different environments |
+| **Multi-language support** | Reach non-English speaking markets |
+| **Student photo capture** | Webcam integration for ID cards |
+| **Printable ID cards** | Auto-generated with QR code |
+| **QR-based attendance** | Students scan QR to mark attendance |
+| **Parent portal** | Guardian tracks child's progress |
+| **SMS/WhatsApp alerts** | Fee and exam reminders |
+| **Offline-first** | Works without internet (Electron + SQLite is perfect) |
+| **Cloud sync** | Optional backup to cloud for disaster recovery |
+| **Mobile companion app** | React Native version for teachers/students |
+| **AI insights** | Predict at-risk students based on attendance + marks |
+
+---
+
+> **Next Step:** Decide on the tech stack (Electron vs Web), then I can scaffold the full project codebase with all modules and get you started immediately. 🚀

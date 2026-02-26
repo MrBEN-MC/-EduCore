@@ -1,0 +1,223 @@
+# EduCore — Implementation Plan
+### Web-Based Tuition Institution Management System
+
+---
+
+## Overview
+
+Build a full-stack, web-based management system for tuition institutions. Institution owners install it on their PC (runs locally via `npm start`) or self-host it. The app supports 5 roles with strict RBAC.
+
+## User Review Required
+
+> [!IMPORTANT]
+> This is a **locally-run web app** — the institution owner runs `npm run start` to launch it in a browser on `localhost:3000`. No internet hosting required. Data stays on their machine (SQLite file). If you want cloud hosting instead, we can switch the DB to PostgreSQL later.
+
+> [!NOTE]
+> For Phase 1 we'll build the **complete core system** (all 5 dashboards functional). Advanced features like PDF export, SMS alerts, and AI insights come after the core is validated.
+
+---
+
+## Tech Stack
+
+| Layer | Technology | Reason |
+|---|---|---|
+| **Framework** | Next.js 15 (App Router) | Full-stack, routing, SSR, API routes |
+| **Styling** | Tailwind CSS + shadcn/ui | Rapid beautiful UI |
+| **Database** | SQLite via Prisma ORM | Zero-config local DB, single file |
+| **Auth** | NextAuth.js v5 (credentials) | Role-based sessions |
+| **Charts** | Recharts | Student/class analytics |
+| **Forms** | React Hook Form + Zod | Validation |
+| **Icons** | Lucide React | Consistent icons |
+| **Notifications** | In-app (DB-driven) | No external service needed |
+| **PDF** | React-PDF / jsPDF | Report cards |
+
+---
+
+## Proposed Changes
+
+### Core Infrastructure
+
+#### [NEW] Next.js 15 App — Project Root (`d:/malit/Desktop/New folder/New folder/`)
+
+All files below are created inside the project root.
+
+---
+
+#### [NEW] `prisma/schema.prisma`
+Full Prisma schema with all models:
+- `Institution`, `User`, `Branch`, `AcademicYear`, `Subject`, `Grade`
+- `Class`, `Enrollment`, `TimetableSlot`
+- `AttendanceSession`, `AttendanceRecord`
+- `FeeCollection`, `Exam`, `ExamResult`
+- `Resource`, `Notification`, `AuditLog`
+
+---
+
+#### [NEW] `src/app/layout.tsx` + `src/app/globals.css`
+- Root layout with custom dark/light theme
+- Google Fonts (Inter)
+- Tailwind config with custom color palette
+
+---
+
+### Auth & Registration
+
+#### [NEW] `src/app/(auth)/register/page.tsx`
+Multi-step institution registration wizard:
+1. Institution info (name, address, logo)
+2. Owner personal info (name, email, phone)
+3. Set owner password
+4. Confirmation → creates Institution + Owner account in DB
+
+#### [NEW] `src/app/(auth)/login/page.tsx`
+- Single login page for ALL roles
+- After login → middleware redirects to role-specific dashboard
+- Shows institution name in header
+
+#### [NEW] `src/middleware.ts`
+- Protect all dashboard routes
+- Role-based redirect (owner → /owner, worker → /worker, etc.)
+
+---
+
+### Owner Dashboard
+
+#### [NEW] `src/app/(dashboard)/owner/`
+- `page.tsx` — Overview: total students, teachers, revenue, classes (stat cards + charts)
+- `workers/page.tsx` — Manage workers (add, edit, deactivate)
+- `settings/page.tsx` — Subjects, grades, fee structures, academic year config
+- `reports/page.tsx` — Institution-wide analytics
+
+---
+
+### Worker Dashboard
+
+#### [NEW] `src/app/(dashboard)/worker/`
+- `page.tsx` — Overview cards
+- `teachers/page.tsx` — Manage teachers
+- `students/page.tsx` — Manage students (add, enroll, search)
+- `classes/page.tsx` — Create and manage classes
+- `card-markers/page.tsx` — Assign card markers to teachers
+- `fees/page.tsx` — Fee structure management + collection overview
+- `calendar/page.tsx` — Academic calendar 
+
+---
+
+### Teacher Dashboard
+
+#### [NEW] `src/app/(dashboard)/teacher/`
+- `page.tsx` — My classes overview
+- `classes/[classId]/page.tsx` — Students list, attendance %, fee status, marks
+- `timetable/page.tsx` — Weekly timetable editor (drag-drop grid, Mon–Sun)
+- `exams/page.tsx` — Schedule papers/tests, enter marks
+- `resources/page.tsx` — Upload notes and tutes per class
+
+---
+
+### Card Marker Dashboard
+
+#### [NEW] `src/app/(dashboard)/card-marker/`
+- `page.tsx` — Assigned classes overview
+- `attendance/page.tsx` — Daily attendance marking per class
+- `fees/page.tsx` — Collect fees, record payment, generate receipt
+
+---
+
+### Student Portal
+
+#### [NEW] `src/app/(dashboard)/student/`
+- `page.tsx` — My Classes + welcome banner
+- `payments/page.tsx` — Payment history + outstanding fees
+- `marks/page.tsx` — Exam results per class + grades
+- `attendance/page.tsx` — Attendance record per class (% + calendar view)
+- `resources/page.tsx` — Download notes/tutes
+- `progress/page.tsx` — Charts: marks trend, attendance trend over time
+
+---
+
+### API Routes
+
+#### [NEW] `src/app/api/`
+All REST endpoints following Next.js route conventions:
+- `/api/auth/[...nextauth]` — Auth
+- `/api/institution/` — Register, get info
+- `/api/users/` — CRUD for all user types
+- `/api/classes/` — Class management
+- `/api/enrollment/` — Student enrollment
+- `/api/attendance/` — Sessions + records
+- `/api/fees/` — Collections + receipts
+- `/api/exams/` — Scheduling + mark entry
+- `/api/resources/` — File upload/download
+- `/api/notifications/` — In-app notifications
+- `/api/timetable/` — Weekly slot CRUD
+
+---
+
+### Shared Components
+
+#### [NEW] `src/components/`
+- `Sidebar.tsx` — Role-based sidebar navigation
+- `StatCard.tsx` — KPI metric cards
+- `DataTable.tsx` — Reusable sortable/filterable table
+- `AttendanceGrid.tsx` — Calendar-style attendance view
+- `TimetableEditor.tsx` — Week grid editor
+- `ProgressChart.tsx` — Recharts line/bar charts
+- `NotificationBell.tsx` — Popover notification list
+- `Modal.tsx` — Reusable dialog component
+- `FileUploader.tsx` — Drag-drop file upload
+
+---
+
+## Verification Plan
+
+### Automated Tests
+No existing tests. We'll verify manually via browser flows.
+
+### Manual Verification (Browser Testing)
+
+**1. Institution Registration**
+- Navigate to `http://localhost:3000/register`
+- Complete 3-step wizard → confirm owner account created in DB
+
+**2. Role Login & Redirect**
+- Login as Owner → lands on `/owner`
+- Login as Worker → lands on `/worker`
+- Login as Teacher → lands on `/teacher`
+- Login as Card Marker → lands on `/card-marker`
+- Login as Student → lands on `/student`
+
+**3. Worker Adds Teacher + Student + Class**
+- Login as Worker → Add a teacher, create a class, enroll a student
+
+**4. Card Marker Marks Attendance**
+- Login as Card Marker → Select class → Mark P/A/L for students → Submit
+
+**5. Card Marker Collects Fee**
+- Login as Card Marker → Fee collection → Select student → Record payment
+
+**6. Teacher Schedules Exam + Enters Marks**
+- Login as Teacher → Exams → Create exam → Enter marks per student
+
+**7. Student Views Progress**
+- Login as Student → Check marks, attendance %, payment history, download notes
+
+**8. Teacher Updates Timetable**
+- Login as Teacher → Timetable → Set Mon–Fri slots → Save
+
+---
+
+## Deployment
+
+Run locally:
+```bash
+npm install
+npx prisma db push
+npm run dev
+# → http://localhost:3000
+```
+
+For production (self-hosted):
+```bash
+npm run build
+npm start
+```

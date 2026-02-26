@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>EduCore — Seed Demo Data</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            font-family: Inter, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 24px
+        }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #2d3d57;
+            border-radius: 16px;
+            padding: 36px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .5)
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 800;
+            margin: 14px 0 6px;
+            text-align: center
+        }
+
+        p {
+            color: #94a3b8;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.7
+        }
+
+        .list {
+            background: #273349;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 20px
+        }
+
+        .list h3 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: #64748b;
+            margin-bottom: 10px
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+            border-bottom: 1px solid #2d3d57;
+            font-size: 13px
+        }
+
+        .item:last-child {
+            border: none
+        }
+
+        .badge {
+            background: #6366f1;
+            color: #fff;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 600
+        }
+
+        .badge.green {
+            background: #22c55e
+        }
+
+        .badge.blue {
+            background: #3b82f6
+        }
+
+        button {
+            width: 100%;
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 13px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: .2s
+        }
+
+        button:hover {
+            background: #4f46e5
+        }
+
+        button.secondary {
+            background: transparent;
+            color: #94a3b8;
+            border: 1px solid #2d3d57;
+            margin-top: 10px
+        }
+
+        .msg {
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 13px;
+            margin-top: 14px;
+            display: none
+        }
+
+        .msg.success {
+            background: rgba(34, 197, 94, .12);
+            border: 1px solid #22c55e;
+            color: #22c55e
+        }
+
+        .msg.error {
+            background: rgba(239, 68, 68, .12);
+            border: 1px solid #ef4444;
+            color: #ef4444
+        }
+
+        .warn {
+            background: rgba(234, 179, 8, .1);
+            border: 1px solid rgba(234, 179, 8, .4);
+            border-radius: 10px;
+            padding: 12px;
+            color: #eab308;
+            font-size: 12px;
+            margin-bottom: 14px;
+            text-align: center
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div style="font-size:40px;text-align:center">🌱</div>
+        <h1>Load Demo Data</h1>
+        <p>Add 5 teachers and 10 students to your EduCore system. Existing data will not be affected.</p>
+
+        <div class="warn" id="warn-box"></div>
+
+        <div class="list">
+            <h3>👩‍🏫 5 Teachers (will be added)</h3>
+            <div class="item"><span>Ms. Amara Perera</span><span class="badge blue">Mathematics</span></div>
+            <div class="item"><span>Mr. Kamal Silva</span><span class="badge blue">Science</span></div>
+            <div class="item"><span>Mrs. Shalini Fernando</span><span class="badge blue">English</span></div>
+            <div class="item"><span>Mr. Nimal Jayawardena</span><span class="badge blue">Physics</span></div>
+            <div class="item"><span>Ms. Dilini Wickramasinghe</span><span class="badge blue">ICT</span></div>
+        </div>
+
+        <div class="list">
+            <h3>🎓 10 Students (will be added)</h3>
+            <div class="item"><span>Ashan Bandara</span><span class="badge green">Grade 10</span></div>
+            <div class="item"><span>Nethmi Rathnayake</span><span class="badge green">Grade 10</span></div>
+            <div class="item"><span>Kasun Madushan</span><span class="badge green">Grade 11</span></div>
+            <div class="item"><span>Hiruni Senanayake</span><span class="badge green">Grade 11</span></div>
+            <div class="item"><span>Tharaka Peiris</span><span class="badge green">Grade 9</span></div>
+            <div class="item"><span>Sanduni Gunasekara</span><span class="badge green">Grade 9</span></div>
+            <div class="item"><span>Malith De Silva</span><span class="badge green">Grade 12</span></div>
+            <div class="item"><span>Chanika Liyanage</span><span class="badge green">Grade 12</span></div>
+            <div class="item"><span>Ruwan Dissanayake</span><span class="badge green">Grade 8</span></div>
+            <div class="item"><span>Pavani Wijesinghe</span><span class="badge green">Grade 8</span></div>
+        </div>
+
+        <p style="font-size:12px;margin-bottom:16px">All passwords: <strong>educore123</strong></p>
+
+        <button onclick="seedData()">🌱 Add Teachers &amp; Students</button>
+        <button class="secondary" onclick="window.location.href='index.html'">← Back to EduCore</button>
+        <div id="msg" class="msg"></div>
+    </div>
+
+    <script>
+        var TEACHERS = [
+            { name: 'Ms. Amara Perera', email: 'amara.perera@academy.com', phone: '0771111101', subject: 'Mathematics' },
+            { name: 'Mr. Kamal Silva', email: 'kamal.silva@academy.com', phone: '0771111102', subject: 'Science' },
+            { name: 'Mrs. Shalini Fernando', email: 'shalini.fernando@academy.com', phone: '0771111103', subject: 'English' },
+            { name: 'Mr. Nimal Jayawardena', email: 'nimal.jayawardena@academy.com', phone: '0771111104', subject: 'Physics' },
+            { name: 'Ms. Dilini Wickramasinghe', email: 'dilini.wickramasinghe@academy.com', phone: '0771111105', subject: 'ICT' }
+        ];
+
+        var STUDENTS = [
+            { name: 'Ashan Bandara', email: 'ashan.bandara@student.com', phone: '0772221101', grade: 'Grade 10' },
+            { name: 'Nethmi Rathnayake', email: 'nethmi.rathnayake@student.com', phone: '0772221102', grade: 'Grade 10' },
+            { name: 'Kasun Madushan', email: 'kasun.madushan@student.com', phone: '0772221103', grade: 'Grade 11' },
+            { name: 'Hiruni Senanayake', email: 'hiruni.senanayake@student.com', phone: '0772221104', grade: 'Grade 11' },
+            { name: 'Tharaka Peiris', email: 'tharaka.peiris@student.com', phone: '0772221105', grade: 'Grade 9' },
+            { name: 'Sanduni Gunasekara', email: 'sanduni.gunasekara@student.com', phone: '0772221106', grade: 'Grade 9' },
+            { name: 'Malith De Silva', email: 'malith.desilva@student.com', phone: '0772221107', grade: 'Grade 12' },
+            { name: 'Chanika Liyanage', email: 'chanika.liyanage@student.com', phone: '0772221108', grade: 'Grade 12' },
+            { name: 'Ruwan Dissanayake', email: 'ruwan.dissanayake@student.com', phone: '0772221109', grade: 'Grade 8' },
+            { name: 'Pavani Wijesinghe', email: 'pavani.wijesinghe@student.com', phone: '0772221110', grade: 'Grade 8' }
+        ];
+
+        // Simple hash (must match app's Utils.hashPwd)
+        function hashPwd(s) {
+            var h = 0;
+            for (var i = 0; i < s.length; i++) h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+            return 'h_' + Math.abs(h).toString(16);
+        }
+
+        function genId() {
+            return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function load() {
+            try { return JSON.parse(localStorage.getItem('educore_data')); } catch (e) { return null; }
+        }
+
+        function save(data) {
+            localStorage.setItem('educore_data', JSON.stringify(data));
+        }
+
+        window.onload = function () {
+            var data = load();
+            var warn = document.getElementById('warn-box');
+            if (!data || !data.institution) {
+                warn.style.display = 'block';
+                warn.textContent = '⚠️ No EduCore setup found in this browser. Open index.html first to set up the institution.';
+                document.querySelector('button').disabled = true;
+            } else {
+                var tCount = (data.users || []).filter(function (u) { return u.role === 'teacher'; }).length;
+                var sCount = (data.users || []).filter(function (u) { return u.role === 'student'; }).length;
+                warn.style.display = 'block';
+                warn.style.background = 'rgba(99,102,241,.1)';
+                warn.style.border = '1px solid #6366f1';
+                warn.style.color = '#818cf8';
+                warn.textContent = '✅ Connected to: ' + data.institution.name + ' (' + tCount + ' teachers, ' + sCount + ' students existing)';
+            }
+        };
+
+        function seedData() {
+            var data = load();
+            if (!data || !data.institution) { showMsg('No EduCore data found. Open index.html first.', 'error'); return; }
+            if (!data.users) data.users = [];
+
+            var existingEmails = data.users.map(function (u) { return u.email; });
+            var tAdded = 0, sAdded = 0, skipped = 0;
+            var now = new Date().toISOString();
+
+            TEACHERS.forEach(function (t) {
+                if (existingEmails.indexOf(t.email) >= 0) { skipped++; return; }
+                data.users.push({
+                    id: genId(), role: 'teacher', name: t.name, email: t.email, phone: t.phone,
+                    passwordHash: hashPwd('educore123'), status: 'active', createdAt: now
+                });
+                tAdded++;
+            });
+
+            STUDENTS.forEach(function (s) {
+                if (existingEmails.indexOf(s.email) >= 0) { skipped++; return; }
+                data.users.push({
+                    id: genId(), role: 'student', name: s.name, email: s.email, phone: s.phone,
+                    passwordHash: hashPwd('educore123'), status: 'active', grade: s.grade, createdAt: now
+                });
+                sAdded++;
+            });
+
+            save(data);
+
+            var msg = '✅ Done! Added ' + tAdded + ' teacher(s) and ' + sAdded + ' student(s).';
+            if (skipped > 0) msg += ' (' + skipped + ' skipped — already existed)';
+            showMsg(msg + ' Redirecting to app...', 'success');
+            setTimeout(function () { window.location.href = 'index.html'; }, 2500);
+        }
+
+        function showMsg(text, type) {
+            var el = document.getElementById('msg');
+            el.textContent = text; el.className = 'msg ' + type; el.style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>EduCore — Account Recovery</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            font-family: Inter, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 24px
+        }
+
+        .card {
+            background: #1e293b;
+            border: 1px solid #2d3d57;
+            border-radius: 16px;
+            padding: 36px;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .5)
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #6366f1;
+            margin-bottom: 6px
+        }
+
+        p {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 24px
+        }
+
+        .info-box {
+            background: #273349;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 20px
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #2d3d57;
+            font-size: 13px
+        }
+
+        .info-row:last-child {
+            border: none
+        }
+
+        .label {
+            color: #94a3b8
+        }
+
+        .val {
+            font-weight: 600
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-bottom: 6px
+        }
+
+        input {
+            width: 100%;
+            background: #273349;
+            border: 1px solid #2d3d57;
+            border-radius: 8px;
+            color: #e2e8f0;
+            padding: 10px 14px;
+            font-size: 14px;
+            outline: none;
+            margin-bottom: 14px
+        }
+
+        input:focus {
+            border-color: #6366f1
+        }
+
+        button {
+            width: 100%;
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s
+        }
+
+        button:hover {
+            background: #4f46e5
+        }
+
+        .msg {
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 13px;
+            margin-top: 14px;
+            display: none
+        }
+
+        .msg.success {
+            background: rgba(34, 197, 94, .15);
+            border: 1px solid #22c55e;
+            color: #22c55e
+        }
+
+        .msg.error {
+            background: rgba(239, 68, 68, .15);
+            border: 1px solid #ef4444;
+            color: #ef4444
+        }
+
+        .no-data {
+            text-align: center;
+            color: #ef4444
+        }
+
+        a {
+            color: #6366f1;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            font-size: 13px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div style="font-size:40px;text-align:center;margin-bottom:14px">🔑</div>
+        <h1 style="text-align:center">Account Recovery</h1>
+        <p style="text-align:center">Your registered owner account details from this browser</p>
+
+        <div id="content"></div>
+        <div id="msg" class="msg"></div>
+        <a href="index.html">← Back to EduCore</a>
+    </div>
+
+    <script>
+        function hashPwd(s) {
+            var h = 0;
+            for (var i = 0; i < s.length; i++) h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+            return 'h_' + Math.abs(h).toString(16);
+        }
+
+        function load() {
+            try { return JSON.parse(localStorage.getItem('educore_data')); } catch (e) { return null; }
+        }
+
+        var data = load();
+        var owner = data && data.users && data.users.find(function (u) { return u.role === 'owner' && u.status !== 'inactive'; });
+        var inst = data && data.institution;
+
+        if (!owner) {
+            document.getElementById('content').innerHTML =
+                '<div class="no-data"><p style="margin:0">⚠️ No EduCore data found in this browser.</p>' +
+                '<p style="margin-top:8px;font-size:12px;color:#94a3b8">Make sure you are opening this file in the <strong>same browser</strong> you registered with.</p></div>';
+        } else {
+            document.getElementById('content').innerHTML =
+                '<div class="info-box">' +
+                '<div class="info-row"><span class="label">Institution</span><span class="val">' + (inst ? inst.name : '—') + '</span></div>' +
+                '<div class="info-row"><span class="label">Your Email</span><span class="val" id="owner-email">' + owner.email + '</span></div>' +
+                '<div class="info-row"><span class="label">Role</span><span class="val">Owner</span></div>' +
+                '</div>' +
+                '<label>Set New Password (min 6 chars)</label>' +
+                '<input type="password" id="new-pwd" placeholder="New password">' +
+                '<label>Confirm New Password</label>' +
+                '<input type="password" id="new-pwd2" placeholder="Repeat password">' +
+                '<button onclick="resetPassword()">🔐 Reset Password</button>';
+        }
+
+        function resetPassword() {
+            var pwd = document.getElementById('new-pwd').value;
+            var pwd2 = document.getElementById('new-pwd2').value;
+            var msg = document.getElementById('msg');
+            if (pwd.length < 6) { showMsg('Password must be at least 6 characters', 'error'); return; }
+            if (pwd !== pwd2) { showMsg('Passwords do not match', 'error'); return; }
+
+            var data = load();
+            data.users = data.users.map(function (u) {
+                return u.id === owner.id ? Object.assign({}, u, { passwordHash: hashPwd(pwd) }) : u;
+            });
+            localStorage.setItem('educore_data', JSON.stringify(data));
+            showMsg('✅ Password reset! You can now login with: ' + owner.email, 'success');
+        }
+
+        function showMsg(text, type) {
+            var el = document.getElementById('msg');
+            el.textContent = text; el.className = 'msg ' + type; el.style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>
